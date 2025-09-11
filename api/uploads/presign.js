@@ -14,8 +14,8 @@ const s3 = new S3Client({
   region: AWS_REGION,
   credentials: {
     accessKeyId: AWS_ACCESS_KEY_ID,
-    secretAccessKey: AWS_SECRET_ACCESS_KEY
-  }
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  },
 });
 
 function allowCors(res) {
@@ -26,43 +26,39 @@ function allowCors(res) {
 
 export default async function handler(req, res) {
   allowCors(res);
+
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { filename, contentType, folder = "uploads" } = (typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {}));
+    const { filename, type, folder } = req.body;
 
-    if (!S3_BUCKET) {
-      return res.status(500).json({ error: "S3_BUCKET not configured" });
-    }
-    if (!filename || !contentType) {
-      return res.status(400).json({ error: "filename and contentType are required" });
+    if (!filename || !type) {
+      return res.status(400).json({ error: "filename and type required" });
     }
 
-    const ext = filename.includes(".") ? filename.split(".").pop() : "";
-    const key = `${folder}/${randomUUID()}-${Date.now()}${ext ? "." + ext : ""}`;
+    const key = `${folder || "uploads"}/${Date.now()}-${filename}`;
 
-    const putCommand = new PutObjectCommand({
+    const command = new PutObjectCommand({
       Bucket: S3_BUCKET,
       Key: key,
-      ContentType: contentType,
-      ACL: "public-read"
+      ContentType: type,
     });
 
-    const uploadUrl = await getSignedUrl(s3, putCommand, { expiresIn: 60 });
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 600 });
 
     const publicUrl = CDN_BASE_URL
-      ? `${CDN_BASE_URL.replace(/\/$/, "")}/${key}`
-      : `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+      ? `${CDN_BASE_URL}/${key}`
+      : `https://${S3_BUCKET}.s3.amazonaws.com/${key}`;
 
-    return res.status(200).json({ uploadUrl, key, publicUrl });
-  } catch (err) {
-    console.error("presign error", err);
-    return res.status(500).json({ error: "Failed to presign" });
+    return res.status(200).json({ uploadUrl, publicUrl, key });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to generate URL" });
   }
 }
