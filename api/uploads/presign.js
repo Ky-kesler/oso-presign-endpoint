@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       Bucket: S3_BUCKET,
       Key: key,
       ContentType: type,
+      ACL: "public-read"
     });
 
     // ✅ No ACL added here — avoids AccessControlListNotSupported error
