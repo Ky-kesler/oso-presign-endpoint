@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     }
 
     const key = `${folder || "uploads"}/${Date.now()}-${filename}`;
-
+    console.log("Generated key:", key);
     const command = new PutObjectCommand({
       Bucket: S3_BUCKET,
       Key: key,
