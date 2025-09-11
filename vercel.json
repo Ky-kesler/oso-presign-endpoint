@@ -1,8 +1,9 @@
 {
-  "functions": {
-    "api/uploads/presign.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    }
-  }
+  "version": 2,
+  "builds": [
+    { "src": "api/uploads/presign.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/uploads/presign", "dest": "/api/uploads/presign.js" }
+  ]
 }
