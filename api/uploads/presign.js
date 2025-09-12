@@ -20,6 +20,9 @@ const s3 = new S3Client({
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
   },
 });
+if (req.method === "OPTIONS") {
+  return res.status(200).set(CORS_HEADERS).end();
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
