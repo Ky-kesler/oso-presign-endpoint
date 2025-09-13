@@ -27,9 +27,10 @@ export default async function handler(req, res) {
   Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
   return res.status(200).end();
 }
-  if (req.method !== "POST") {
-return res.status(405).set(CORS_HEADERS).json({ error: "Method not allowed" });
-  }
+ if (req.method !== "POST") {
+  Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+  return res.status(405).json({ error: "Method not allowed" });
+}
 
   try {
     const { filename, type, folder } = req.body;
