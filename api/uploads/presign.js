@@ -24,7 +24,7 @@ const s3 = new S3Client({
 
 export default async function handler(req, res) {
     if (req.method === "OPTIONS") {
-    return res.status(200).set(CORS_HEADERS).end();
+return res.status(405).set(CORS_HEADERS).json({ error: "Method not allowed" });
   }
 
   if (req.method !== "POST") {
