@@ -24,19 +24,20 @@ const s3 = new S3Client({
 
 export default async function handler(req, res) {
     if (req.method === "OPTIONS") {
-return res.status(405).set(CORS_HEADERS).json({ error: "Method not allowed" });
+return res.status(200).set(CORS_HEADERS).end();
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+return res.status(405).set(CORS_HEADERS).json({ error: "Method not allowed" });
   }
 
   try {
     const { filename, type, folder } = req.body;
 
-return res.status(400).set(CORS_HEADERS).json({ error: "filename and type required" });
-      return res.status(400).json({ error: "filename and type required" });
-    }
+if (!filename || !type) {
+  return res.status(400).set(CORS_HEADERS).json({ error: "filename and type required" });
+}
+
 
     const key = `${folder || "uploads"}/${Date.now()}-${filename}`;
     console.log("Generated key:", key);
