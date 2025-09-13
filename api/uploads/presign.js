@@ -52,9 +52,11 @@ return res.status(400).json({ error: "filename and type required" });
     const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 600 });
     const publicUrl = `https://${S3_BUCKET}.s3.amazonaws.com/${key}`;
 
-return res.status(200).set(CORS_HEADERS).json({ uploadUrl, publicUrl, key });
-  } catch (error) {
-    console.error(error);
-return res.status(500).set(CORS_HEADERS).json({ error: "Failed to generate URL" });
-  }
+Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+return res.status(200).json({ uploadUrl, publicUrl, key });
+} catch (error) {
+  console.error(error);
+  Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+  return res.status(500).json({ error: "Failed to generate URL" });
+}
 }
