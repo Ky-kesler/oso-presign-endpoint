@@ -36,8 +36,8 @@ export default async function handler(req, res) {
     const { filename, type, folder } = req.body;
 
 if (!filename || !type) {
-  return res.status(400).set(CORS_HEADERS).json({ error: "filename and type required" });
-}
+  Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+return res.status(400).json({ error: "filename and type required" });
 
 
     const key = `${folder || "uploads"}/${Date.now()}-${filename}`;
