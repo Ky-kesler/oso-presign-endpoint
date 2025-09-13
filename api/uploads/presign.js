@@ -34,7 +34,7 @@ return res.status(405).set(CORS_HEADERS).json({ error: "Method not allowed" });
   try {
     const { filename, type, folder } = req.body;
 
-    if (!filename || !type) {
+return res.status(400).set(CORS_HEADERS).json({ error: "filename and type required" });
       return res.status(400).json({ error: "filename and type required" });
     }
 
