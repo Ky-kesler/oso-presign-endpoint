@@ -53,6 +53,6 @@ return res.status(400).set(CORS_HEADERS).json({ error: "filename and type requir
 return res.status(200).set(CORS_HEADERS).json({ uploadUrl, publicUrl, key });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Failed to generate URL" });
+return res.status(500).set(CORS_HEADERS).json({ error: "Failed to generate URL" });
   }
 }
